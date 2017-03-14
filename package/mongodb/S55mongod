@@ -5,11 +5,19 @@
 
 start() {
         printf "Starting MongoDB: "
-        if /etc/knot/start.sh mongod
+        if [ -s /data/db/mongod.lock ]
         then
-          echo "OK"
+          /etc/knot/stop.sh mongod
+          mongod --repair
+          /etc/knot/start.sh mongod
+          echo "MongoDB Repaired"
         else
-          echo "FAIL"
+          if /etc/knot/start.sh mongod
+          then
+            echo "OK"
+          else
+            echo "FAIL"
+          fi
         fi
 }
 
