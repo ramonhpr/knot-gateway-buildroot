@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# Run knotctld
+#
+
+node /usr/local/bin/knot-control-source/server.js &
+echo $! > /tmp/knotctld.pid
+
+PIDFILE=/tmp/knotctldl.pid
+PID=`cat $PIDFILE`
+
+while [ -e /proc/$PID ]
+do
+	sleep 1
+done

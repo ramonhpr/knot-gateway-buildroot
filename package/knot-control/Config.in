@@ -1,0 +1,5 @@
+config BR2_PACKAGE_KNOT_CONTROL
+        bool "knot-control"
+        depends on BR2_PACKAGE_NODEJS
+        help
+          TODO
