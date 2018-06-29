@@ -1,0 +1,160 @@
+From 7eecb0e056f476de200af8b247db90bd64a8b6c6 Mon Sep 17 00:00:00 2001
+From: Ramon Ribeiro <rhpr@cesar.org.br>
+Date: Fri, 8 Jun 2018 15:37:47 -0300
+Subject: [PATCH] wip
+
+---
+ Makefile.am             |  2 --
+ configure.ac            | 20 ++++++++++++++------
+ src/Makefile.am         |  3 ---
+ src/agent/Makefile.am   |  7 ++-----
+ src/agent/libcoap.h     |  1 -
+ third_party/Makefile.am |  5 -----
+ 6 files changed, 16 insertions(+), 22 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 6364b9a..c5eec1e 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -34,9 +34,7 @@ SUBDIRS                                   = \
+     third_party                             \
+     include                                 \
+     src                                     \
+-    tests                                   \
+     doc                                     \
+-    tools                                   \
+     $(NULL)
+ 
+ EXTRA_DIST                                = \
+diff --git a/configure.ac b/configure.ac
+index 6e46ab8..92af77d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -394,6 +394,20 @@ if test "${ac_no_link}" != "yes"; then
+     AC_CHECK_FUNCS([memcpy])
+ fi
+ 
++# Check for modules
++PKG_CHECK_MODULES(LIBCOAP, libcoap-1,
++  [AC_DEFINE([HAVE_LIBCOAP],[1],[Use LIBCOAP])],
++  [AC_MSG_ERROR("libcoap missing")])
++AC_SUBST(LIBCOAP_CPPFLAGS)
++AC_SUBST(LIBCOAP_LIBS)
++
++#PKG_CHECK_MODULES(WPANTUND, wpantund,
++#  [AC_DEFINE([HAVE_WPANTUND],[1],[Use WPANTUND])],
++#  [AC_MSG_ERROR("wpantund missing")])
++#AC_SUBST(WPANTUND_CPPFLAGS)
++#AC_SUBST(WPANTUND_LIBS)
++
++
+ # Add any code coverage CPPFLAGS and LDFLAGS
+ 
+ CPPFLAGS="${CPPFLAGS} ${NL_COVERAGE_CPPFLAGS}"
+@@ -411,13 +425,8 @@ NL_RESTORE_WERROR
+ AC_CONFIG_FILES([
+ Makefile
+ third_party/Makefile
+-third_party/Simple-web-server/Makefile
+-third_party/libcoap/Makefile
+ third_party/mbedtls/Makefile
+ third_party/wpantund/Makefile
+-third_party/mdl/Makefile
+-third_party/angular/Makefile
+-third_party/angular-material/Makefile
+ include/Makefile
+ src/Makefile
+ src/agent/Makefile
+@@ -426,7 +435,6 @@ src/common/Makefile
+ src/utils/Makefile
+ tests/Makefile
+ tests/mdns/Makefile
+-tests/meshcop/Makefile
+ tests/unit/Makefile
+ tools/Makefile
+ doc/Makefile
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 59da77f..47a0ea1 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -32,7 +32,6 @@ include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
+ 
+ DIST_SUBDIRS                                         = \
+     agent                                              \
+-    web                                                \
+     common                                             \
+     utils                                              \
+     $(NULL)
+@@ -43,7 +42,6 @@ SUBDIRS                                              = \
+     common                                             \
+     utils                                              \
+     agent                                              \
+-    web                                                \
+     $(NULL)
+ 
+ 
+@@ -51,7 +49,6 @@ SUBDIRS                                              = \
+ 
+ PRETTY_SUBDIRS                                       = \
+     agent                                              \
+-    web                                                \
+     common                                             \
+     utils                                              \
+     $(NULL)
+diff --git a/src/agent/Makefile.am b/src/agent/Makefile.am
+index fe95638..07b95d5 100644
+--- a/src/agent/Makefile.am
++++ b/src/agent/Makefile.am
+@@ -62,7 +62,7 @@ libotbr_agent_la_SOURCES                                      = \
+     $(NULL)
+ 
+ libotbr_agent_la_LIBADD                                       = \
+-    $(top_builddir)/third_party/libcoap/repo/libcoap-1.la       \
++    @LIBCOAP_LIBS@                                              \
+     $(top_builddir)/third_party/mbedtls/libmbedtls.la           \
+     $(top_builddir)/third_party/wpantund/libwpanctl.la          \
+     $(top_builddir)/src/common/libotbr-logging.la               \
+@@ -81,11 +81,8 @@ libotbr_agent_la_CPPFLAGS                                                  = \
+     -DMBEDTLS_CONFIG_FILE='<config-thread.h>'                                \
+     -I$(top_srcdir)/third_party/mbedtls/repo/configs                         \
+     -I$(top_srcdir)/third_party/mbedtls/repo/include                         \
+-    -I$(top_builddir)/third_party/libcoap/repo                               \
++    @LIBCOAP_CPPFLAGS@							     \
+     -I$(top_srcdir)/src                                                      \
+-    -I$(top_srcdir)/third_party/libcoap/repo                                 \
+-    -I$(top_srcdir)/third_party/libcoap/repo/include                         \
+-    -I$(top_srcdir)/third_party/wpantund/repo/src                            \
+     -I$(top_srcdir)/third_party/wpantund/repo/src                            \
+     -I$(top_srcdir)/third_party/wpantund/repo/src/ipc-dbus                   \
+     -I$(top_srcdir)/third_party/wpantund/repo/src/wpanctl                    \
+diff --git a/src/agent/libcoap.h b/src/agent/libcoap.h
+index 1d1a16e..8cef2bd 100644
+--- a/src/agent/libcoap.h
++++ b/src/agent/libcoap.h
+@@ -32,7 +32,6 @@
+ /// @cond
+ 
+ #define WITH_POSIX 1
+-#include "coap_config.h"
+ #include <coap/coap.h>
+ 
+ #define MAX_COAP_PACKET 1280
+diff --git a/third_party/Makefile.am b/third_party/Makefile.am
+index d4e990b..1801ff7 100644
+--- a/third_party/Makefile.am
++++ b/third_party/Makefile.am
+@@ -31,11 +31,6 @@ include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
+ SUBDIRS                 = \
+     mbedtls               \
+     wpantund              \
+-    libcoap               \
+-    Simple-web-server     \
+-    mdl                   \
+-    angular               \
+-    angular-material      \
+     $(NULL)
+ 
+ include $(abs_top_nlbuild_autotools_dir)/automake/post.am
+-- 
+2.7.4
+

@@ -1,0 +1,19 @@
+config BR2_PACKAGE_OTBR
+	bool "otbr"
+	select BR2_PACKAGE_MBEDTLS
+	select BR2_PACKAGE_BOOST
+	select BR2_PACKAGE_LIBCOAP
+	select BR2_PACKAGE_WPANTUND
+	select BR2_PACKAGE_TAYGA
+	help
+		OTBR provides the following services:
+
+		mDNS Publisher — Allows an External Commissioner to discover an
+		OTBR and its associated Thread network
+		PSKc Generator — For generation of PSKc keys
+		Web Service — Web UI for management of a Thread network
+		WPAN Controller — DBus operations for control of the WPAN
+		interface
+		Third-party components for Border Router Services include Simple
+		Web Server and Material Design Lite for the framework of the web
+		UI.
