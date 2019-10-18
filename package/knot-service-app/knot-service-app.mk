@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KNOT_SERVICE_APP_VERSION = KNOT-v02.01-rc01
+KNOT_SERVICE_APP_VERSION = 723bc45fed600727f21c84fa28358ef45fffed34
 KNOT_SERVICE_APP_SITE = https://github.com/CESARBR/knot-service-source.git
 KNOT_SERVICE_APP_SITE_METHOD = git
 KNOT_SERVICE_APP_INSTALL_STAGING = NO
